@@ -3,7 +3,9 @@ import subprocess
 import os
 
 crossword_file = open(sys.argv[1])
-tex_header = open(sys.argv[2]).read()
+mini_number = sys.argv[2]
+tex_header = open("tex_header.txt").read()
+tex_header = tex_header.replace("\\textsf{\\textbf{\\huge{Mini Meta}}}", "\\textsf{\\textbf{\\huge{Mini Meta " + mini_number + "}}}")
 
 section = 0
 gray_cell ="""\\cellcolor{gray!25}\n"""
@@ -179,12 +181,19 @@ for i in range(6):
     amuse_doc += "\n---\n\n"
 print(amuse_doc)
 
+try:  
+    os.mkdir("output")  
+except OSError as error:  
+    print(error)
 
+fileName = "MiniMeta" +  mini_number
+f = open("output/" + fileName + ".txt", "w")
+f.write(amuse_doc)
+f.close()
 
-f = open("mini.tex", "w")
+f = open("output/" + fileName + ".tex", "w")
 f.write(document)
 f.close()
 
-subprocess.check_call(['pdflatex', 'mini.tex'])# print(acrossClueCount)
-
-#")
+subprocess.check_call(['pdflatex', "output/" + fileName + ".tex"])
+os.rename(fileName + ".pdf", "output/" + fileName + ".pdf")
