@@ -6,6 +6,7 @@
 \usepackage[letterpaper]{geometry}
 \usepackage{enumitem}
 \usepackage{makecell}
+\usepackage{textcomp}
 \usepackage{multirow}
 \usepackage{color}
 \usepackage{multicol}
@@ -15,13 +16,14 @@
 
 
 %paperwidth=17in, paperheight=22in, 
-\geometry{landscape, top=0in, bottom=0in, left=0in, right=0in}
+\geometry{landscape, top=4mm, bottom=0in, left=0in, right=0in}
 
 
 \title{MetaMini Tabular}
 \author{kyle.rosenbluth }
 \date{November 2020}
 \newcommand{\colwidth}{24em}
+\newcommand*{\myfont}{\fontfamily{ptm}\selectfont}
 
 \begin{document}
 

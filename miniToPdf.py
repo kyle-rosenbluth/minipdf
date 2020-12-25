@@ -2,8 +2,11 @@ import sys
 import subprocess
 import os
 
-cf_old = open(sys.argv[1])
-crossword_file = cf_old.read()
+# cf_old = open(sys.argv[1], "a")
+# cf_old.write("\n")
+# cf_old.close()
+
+crossword_file = open(sys.argv[1]).read()
 mini_number = sys.argv[2]
 tex_header = open("tex_header.txt").read()
 tex_header = tex_header.replace("\\textsf{\\textbf{\\huge{Mini Meta}}}", "\\textsf{\\textbf{\\huge{Mini Meta " + mini_number + "}}}")
@@ -17,20 +20,28 @@ downIndeces = [[], [], [], [], [], []]
 
 acrossClues = [[], [], [], [], [], []]
 downClues = [[], [], [], [], [], []]
-escapeChars = {"_": "\_", "&":"\&", "%": "\%", "$":"\$", "#":"\#", "{":"\{", "}":"\}", "~":"\\textasciitilde", "^":"\\textasciicircum", "\\":"\\textbackslash"}
+escapeChars = {"_": "\_", "&":"\&", "%": "\%", "$":"\$", "#":"\#", "{":"\{", "}":"\}", "~":"\\textasciitilde", "^":"\\textasciicircum", "\\":"\\textbackslash", """'""":"{\\myfont \\textquotesingle}"}
+invertEscape  = {v: k for k, v in escapeChars.items()}
 metaClueIndeces = None
 metaSolutionIndeces = None
 metaClues = []
 metaSolution = []
+saturday_solution_indeces = None
+solution_indeces = []
+saturday_solution = ""
+solutions = ["", "", "", "", ""]
 def generatePuzzle(solved):
+    global solution_indeces
+    global saturday_solution_indeces
+    global saturday_solution
     section = 0
-    unitLength = 25 if solved else 23
+    unitLength = 25 if solved else 21
     gray_cell ="""\\cellcolor{gray!25}\n"""
     puzzle_start_pre_toprow = """\\renewcommand{\\PuzzleUnitlength}{""" + str(unitLength) + """pt}\n\\begin{minipage}[t][23em][t]{\colwidth}\n\\vspace{.25em}\n\\center{\\textsf{\\textbf{"""
     puzzle_start_pre_bottomrow = """\\renewcommand{\\PuzzleUnitlength}{""" + str(unitLength) + """pt}\n\\begin{minipage}[c][23em][t]{\colwidth}\n\\vspace{1em}\n\\center{\\textsf{\\textbf{"""
     puzzle_start_post = """}}}\\vspace{0.55em}\\\\\n\\begin{Puzzle}{5}{5}\n"""
     if (solved):
-        puzzle_start_post = """}}}\\vspace{0.55em}\\\\\n\\PuzzleSolution\n\\begin{Puzzle}{5}{5}\n"""
+        puzzle_start_post = """}}}\\vspace{0.55em}\\\\\n\\PuzzleSolution\n\\Large\n\\begin{Puzzle}{5}{5}\n"""
 
 
     crosswords = [gray_cell + puzzle_start_pre_toprow + "MONDAY" + puzzle_start_post,
@@ -53,9 +64,7 @@ def generatePuzzle(solved):
     level = 0
     puzzleText = []
     for line in iter(crossword_file.splitlines()):
-        # print(line)
         if (line == "\n" or line == ""):
-            print("empty")
             # Skip empty line
             continue
         elif (line == "Across"):
@@ -63,13 +72,13 @@ def generatePuzzle(solved):
             section = 1
             continue
         elif line == "Down":
-            print("Down?")
             # Begin parsing down clues for all puzzles
             section = 2
             continue
         elif line == "===":
             # Begin parsing meta solutions
             section = 3
+            continue
         if section == 0:
             puzzleText.append(line)
         elif section == 1:
@@ -79,7 +88,6 @@ def generatePuzzle(solved):
             boardIdx = int(acrossCount / 5)
             if (acrossCount % 5 == 0):
                 boardIdx -= 1
-            print(num_clue)
             acrossClues[col + level].append(num_clue[1].replace("\n", "").translate(str.maketrans(escapeChars)))
             col += 1
             if (col == 3):
@@ -92,15 +100,19 @@ def generatePuzzle(solved):
             num_clue = line.split(". ", 1)
             downCluesFlat.append(num_clue[1].replace("\n", "").translate(str.maketrans(escapeChars)))
         elif section == 3:
-            print("yo")
+            print("section 3")
+            if not solution_indeces:
+                solution_indeces = line.split(",")
+            else:
+                saturday_solution_indeces = eval("[" + line + "]")
     level = 0
     row = 0
     col = 0
     boardIdx = 0
     amuse_solutions = ["", "", "", "", "", ""]
+    saturday_solution = "." * len(saturday_solution_indeces)
     for line in puzzleText:
         if (line == "................."):
-            print("NOWA")
             # Row of all black tiles means we've moved down to the Thu / Fri / Sat row
             level = 3
             row = 0
@@ -112,7 +124,6 @@ def generatePuzzle(solved):
         for c in (line + "\n"):
             squareIdx += 1
             if (squareIdx > 0 and squareIdx % 5 == 0):
-                print("newe board")
                 # This means we've gone to a new board
                 crosswords[boardIdx] += ".\n"
                 amuse_solutions[boardIdx] += "\n"
@@ -130,7 +141,6 @@ def generatePuzzle(solved):
                 if not (col_num[boardIdx][col] and row_num[boardIdx][row]):
                     clueIndeces[boardIdx] += 1
                     crosswords[boardIdx] += "[" + str(clueIndeces[boardIdx]) + "]" + c + " |"
-                    amuse_solutions[boardIdx] += c
                     if not col_num[boardIdx][col]:
                         downIndeces[boardIdx].append(clueIndeces[boardIdx])
                         downClues[boardIdx].append(downCluesFlat.pop(0))
@@ -140,13 +150,25 @@ def generatePuzzle(solved):
                     row_num[boardIdx][row] = clueIndeces[boardIdx]
                 else:
                     crosswords[boardIdx] += c + " |"
-                    amuse_solutions[boardIdx] += c
+                amuse_solutions[boardIdx] += c
+                if boardIdx < 5:
+                    solIdx, isColSol = solution_indeces[boardIdx]
+                    isColSol = True if isColSol == "a" else False
+                    solIdx = int(solIdx)
+                    if isColSol and row == solIdx:
+                        solutions[boardIdx] += c
+                    elif (not isColSol) and col == solIdx:
+                        solutions[boardIdx] += c
+                else:
+                    if (col, row) in saturday_solution_indeces:
+                        index_of = saturday_solution_indeces.index((col, row))
+                        saturday_solution = saturday_solution[:index_of] + c + saturday_solution[index_of + 1:]
             col += 1
         row += 1
     if (not solved):
         # Across
         for i in range(len(crosswords)):
-            crosswords[i] += """\\end{Puzzle}\\\\\n{\\fontfamily{put}\\selectfont\n\\begin{PuzzleClues}{\\textbf{Across}}\\\\\n"""
+            crosswords[i] += """\\end{Puzzle}\\\\\n{\\fontfamily{phv}\\selectfont\n\\begin{PuzzleClues}{\\textbf{Across}}\n\\begin{enumerate}[topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex, left=0pt, align=left, labelsep=2pt]\n\\fontsize{8}{9}\\selectfont\n"""
         boardIdx = 0
         for puz in acrossClues:
             clueIdx = 0
@@ -155,12 +177,12 @@ def generatePuzzle(solved):
                 clue = acrossClues[boardIdx][clueIdx]
                 # acrossClueCount[boardIdx] += 1
                 clueIdx += 1
-                crosswords[boardIdx] += """\\Clue{\\textbf{""" + str(clue_num) + """}} {} {\\raggedright{""" + clue + """}} \\\\\n"""
+                crosswords[boardIdx] += """\\item [\\textbf{""" + str(clue_num) + """}] \\raggedright{""" + clue + """} \\\\\n"""
             boardIdx += 1
 
         #Down
         for i in range(len(crosswords)):
-            crosswords[i] += """\\end{PuzzleClues}\n\\begin{PuzzleClues}{\\textbf{Down}} \\\\\n"""
+            crosswords[i] += """\\end{enumerate}\n\\end{PuzzleClues}\n\\begin{PuzzleClues}{\\textbf{Down}}\n\\begin{enumerate}[topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex, left=0pt, align=left, labelsep=2pt]\n\\fontsize{8}{9}\\selectfont\n"""
 
         boardIdx = 0
         for puz in downClues:
@@ -169,34 +191,51 @@ def generatePuzzle(solved):
                 clue_num = downIndeces[boardIdx][clueIdx]
                 clue = downClues[boardIdx][clueIdx]
                 clueIdx += 1
-                crosswords[boardIdx] += """\\Clue{\\textbf{""" + str(clue_num) + """}} {} {\\raggedright{""" + clue + """}} \\\\\n"""
+                crosswords[boardIdx] += """\\item [\\textbf{""" + str(clue_num) + """}] \\raggedright{""" + clue + """} \\\\\n"""
             boardIdx += 1
 
         for i in range(len(crosswords)):
-            crosswords[i] += """\n\\end{PuzzleClues}\n}\n\\end{minipage}\n\\vspace{1em}\n"""
+            crosswords[i] += """\n\\end{enumerate}\n\\end{PuzzleClues}\n}\n\\end{minipage}\n\\vspace{1em}\n"""
             if i == 2:
                 crosswords[i] += """\\\\"""
             elif i != 5:
                 crosswords[i] += """&\n"""
+    else:
+        for i in range(len(crosswords)):
+#             \vspace{2em}
+# \center{\textsf{\textbf{\Large{SOME}}}}\\
+            solutions_linear = solutions + [saturday_solution]
+            crosswords[i] += """\\end{Puzzle}\\\\\n\\vspace{2em}\n\\center{\\textsf{\\textbf{\\Large{""" + solutions_linear[i] + """}}}}\\\\\n\\end{minipage}\n\\vspace{1em}\n"""
+            if i == 2:
+                crosswords[i] += """\\\\"""
+            elif i != 5:
+                crosswords[i] += """&\n"""
+
+    #     for i in range(len(crosswords)):
+    #         crosswords[i] += """\\end{Puzzle}\\\\\n"""
     return (crosswords,  amuse_solutions)
 
 crosswords_unsolved, amuse_solutions = generatePuzzle(False)
 document = tex_header + "\n" + ''.join(crosswords_unsolved)
 document += """\\\\\n\\end{tabular}\n\\end{center}\n\\end{document}"""
-# print(document)
 
 amuse_doc = ""
 for i in range(6):
     amuse_doc += amuse_solutions[i] + "\n"
     amuse_doc +=  "Across\n"
     for (clue, num) in zip(acrossClues[i], acrossIndeces[i]):
-        amuse_doc  += str(num) + ". " + clue  + "\n"
+        clue_fixed = clue
+        for word, initial in invertEscape.items():
+            clue_fixed = clue_fixed.replace(word, initial)
+        amuse_doc  += str(num) + ". " + clue_fixed + "\n"
     amuse_doc += "\n"
     amuse_doc +=  "Down\n"
     for (clue, num) in zip(downClues[i], downIndeces[i]):
-        amuse_doc  += str(num) + ". " + clue  + "\n"
+        clue_fixed = clue
+        for word, initial in invertEscape.items():
+            clue_fixed = clue_fixed.replace(word, initial)
+        amuse_doc  += str(num) + ". " + clue_fixed  + "\n"
     amuse_doc += "\n---\n\n"
-print(amuse_doc)
 
 try:  
     os.mkdir("output")  
@@ -208,9 +247,9 @@ f = open("output/" + fileName + ".txt", "w")
 f.write(amuse_doc)
 f.close()
 
-f = open("output/" + fileName + ".tex", "w")
+f = open("output/" + fileName + "(solved)" + ".tex", "w")
 f.write(document)
 f.close()
 
-subprocess.check_call(['pdflatex', "output/" + fileName + ".tex"])
-os.rename(fileName + ".pdf", "output/" + fileName + ".pdf")
+subprocess.check_call(['pdflatex', "output/" + fileName + "(solved)" + ".tex"])
+os.rename(fileName + "(solved)" + ".pdf", "output/" + fileName + "(solved)" + ".pdf")
