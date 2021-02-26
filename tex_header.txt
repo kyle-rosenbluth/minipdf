@@ -35,8 +35,8 @@
 % \\
 
 
-\textsf{\textbf{By Pete Muller and Andrew White}}\\
-\raggedright{\textsf{For each of the first five mini crosswords, one of the entries also serves as part of a five-word meta clue. The answer to the meta is a word (five letters or longer) hidden within the sixth mini crossword. The hidden meta answer starts in one of the squares and snakes through the grid vertically and horizontally from there (no diagonals!) without revisiting any squares.\\}}
+\textsf{\textbf{By Pete Muller \& Andrew White}}\\
+\raggedright{\textsf{For each of the first five mini crosswords, one of the entries also serves as part of a five-word meta clue. The answer to the meta is a word or phrase (five letters or longer) hidden within the sixth mini crossword. The hidden meta answer starts in one of the squares and snakes through the grid vertically and horizontally from there (no diagonals!) without revisiting any squares.\\}}
 \end{minipage}
 \hspace{.7em}
 % \hfill

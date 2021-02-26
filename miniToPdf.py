@@ -9,7 +9,10 @@ import os
 crossword_file = open(sys.argv[1]).read()
 mini_number = sys.argv[2]
 tex_header = open("tex_header.txt").read()
+tex_header_solved = open("tex_header_solved.txt").read()
 tex_header = tex_header.replace("\\textsf{\\textbf{\\huge{Mini Meta}}}", "\\textsf{\\textbf{\\huge{Mini Meta " + mini_number + "}}}")
+tex_header_solved = tex_header_solved.replace("\\textsf{\\textbf{\\huge{Mini Meta Solution}}}", "\\textsf{\\textbf{\\huge{Mini Meta " + mini_number + " Solution}}}")
+
 
 # Indeces variables indicate what #value to label the tiles. It does not offer any insight on to which tiles get the numbers, just what the tiles # values should be.
 acrossIndeces = [[], [], [], [], [], []]
@@ -138,9 +141,91 @@ def generatePuzzle(solved):
                 crosswords[boardIdx] += "* |"
                 amuse_solutions[boardIdx] += "."
             else:
+                solution_pre = ""
+                if boardIdx < 5 and solved:
+                    solIdx, isColSol = solution_indeces[boardIdx]
+                    isColSol = True if isColSol == "a" else False
+                    solIdx = int(solIdx)
+                    if isColSol and row == solIdx:
+                        solutions[boardIdx] += c
+                        solution_pre = "[sf]"
+                    elif (not isColSol) and col == solIdx:
+                        solutions[boardIdx] += c
+                        solution_pre = "[sf]"
+                else:
+                    if (col, row) in saturday_solution_indeces and solved:
+                        index_of = saturday_solution_indeces.index((col, row))
+                        saturday_solution = saturday_solution[:index_of] + c + saturday_solution[index_of + 1:]
+                        if (index_of == 0):
+                            next_idx = saturday_solution_indeces[index_of + 1]
+                            if (next_idx[0] > col):
+                                solution_pre = "[gH]"
+                            elif next_idx[0] < col:
+                                solution_pre = "[gh]"
+                            elif next_idx[1] > row:
+                                solution_pre = "[gv]"
+                            else:
+                                solution_pre = "[gV]"
+                        elif index_of == len(saturday_solution_indeces) - 1:
+                            prev_idx = saturday_solution_indeces[index_of - 1]
+                            if (col > prev_idx[0]):
+                                solution_pre = "[rh]"
+                            elif col < prev_idx[0]:
+                                solution_pre = "[rH]"
+                            elif row > prev_idx[1]:
+                                solution_pre = "[rV]"
+                            else:
+                                solution_pre = "[rv]"
+                        else:
+                            prev_idx = saturday_solution_indeces[index_of - 1]
+                            next_idx = saturday_solution_indeces[index_of + 1]
+                            if (prev_idx[0] < col):
+                                #Horizontal In from left
+                                if (next_idx[0] > col):
+                                    #Horizontal line
+                                    solution_pre = "[e]"
+                                elif next_idx[1] > row:
+                                    #elbow down
+                                    solution_pre = "[3]"
+                                elif next_idx[1] < row:
+                                    # elbow up
+                                    solution_pre = "[2]"
+                            elif prev_idx[0] > col:
+                                #Horizontal in from right
+                                if (next_idx[0] < col):
+                                    # Horizontal line
+                                    solution_pre = "[e]"
+                                elif next_idx[1] > row:
+                                    #elbow down
+                                    solution_pre = "[4]"
+                                elif next_idx[1] < row:
+                                    #elbow up
+                                    solution_pre = "[1]"
+                            elif prev_idx[1] > row:
+                                #vertical in from bottom
+                                if next_idx[1] < row:
+                                    #vertical line
+                                    solution_pre = "[p]"
+                                elif next_idx[0] < col:
+                                    #elbow left
+                                    solution_pre = "[3]"
+                                elif next_idx[0] > col:
+                                    #elbow right
+                                    solution_pre = "[4]"
+                            elif prev_idx[1] < row:
+                                #vertical in from top
+                                if next_idx[1] > row:
+                                    #vertical line
+                                    solution_pre = "[p]"
+                                elif next_idx[0] < col:
+                                    #elbow left
+                                    solution_pre = "[2]"
+                                elif next_idx[0] > col:
+                                    #elbow right
+                                    solution_pre = "[1]"
                 if not (col_num[boardIdx][col] and row_num[boardIdx][row]):
                     clueIndeces[boardIdx] += 1
-                    crosswords[boardIdx] += "[" + str(clueIndeces[boardIdx]) + "]" + c + " |"
+                    crosswords[boardIdx] += "[" + str(clueIndeces[boardIdx]) + "]" + solution_pre + c + " |"
                     if not col_num[boardIdx][col]:
                         downIndeces[boardIdx].append(clueIndeces[boardIdx])
                         downClues[boardIdx].append(downCluesFlat.pop(0))
@@ -149,20 +234,8 @@ def generatePuzzle(solved):
                     col_num[boardIdx][col] = clueIndeces[boardIdx]
                     row_num[boardIdx][row] = clueIndeces[boardIdx]
                 else:
-                    crosswords[boardIdx] += c + " |"
+                    crosswords[boardIdx] +="[]" + solution_pre + c + " |"
                 amuse_solutions[boardIdx] += c
-                if boardIdx < 5:
-                    solIdx, isColSol = solution_indeces[boardIdx]
-                    isColSol = True if isColSol == "a" else False
-                    solIdx = int(solIdx)
-                    if isColSol and row == solIdx:
-                        solutions[boardIdx] += c
-                    elif (not isColSol) and col == solIdx:
-                        solutions[boardIdx] += c
-                else:
-                    if (col, row) in saturday_solution_indeces:
-                        index_of = saturday_solution_indeces.index((col, row))
-                        saturday_solution = saturday_solution[:index_of] + c + saturday_solution[index_of + 1:]
             col += 1
         row += 1
     if (not solved):
@@ -215,10 +288,36 @@ def generatePuzzle(solved):
     #         crosswords[i] += """\\end{Puzzle}\\\\\n"""
     return (crosswords,  amuse_solutions)
 
-crosswords_unsolved, amuse_solutions = generatePuzzle(False)
-document = tex_header + "\n" + ''.join(crosswords_unsolved)
+solved = False
+crosswords_unsolved, amuse_solutions = generatePuzzle(solved)
+document = (tex_header_solved if solved else tex_header) + "\n" + ''.join(crosswords_unsolved)
 document += """\\\\\n\\end{tabular}\n\\end{center}\n\\end{document}"""
 
+# Indeces variables indicate what #value to label the tiles. It does not offer any insight on to which tiles get the numbers, just what the tiles # values should be.
+acrossIndeces = [[], [], [], [], [], []]
+downIndeces = [[], [], [], [], [], []]
+
+# acrossClueCount = [0] * 6
+# downClueCount = [0] * 6
+
+acrossClues = [[], [], [], [], [], []]
+downClues = [[], [], [], [], [], []]
+escapeChars = {"_": "\_", "&":"\&", "%": "\%", "$":"\$", "#":"\#", "{":"\{", "}":"\}", "~":"\\textasciitilde", "^":"\\textasciicircum", "\\":"\\textbackslash", """'""":"{\\myfont \\textquotesingle}"}
+invertEscape  = {v: k for k, v in escapeChars.items()}
+metaClueIndeces = None
+metaSolutionIndeces = None
+metaClues = []
+metaSolution = []
+saturday_solution_indeces = None
+solution_indeces = []
+saturday_solution = ""
+solutions = ["", "", "", "", ""]
+
+solved = True
+crosswords_solved, amuse_solutions = generatePuzzle(solved)
+document_solved = (tex_header_solved if solved else tex_header) + "\n" + ''.join(crosswords_solved)
+document_solved += """\\\\\n\\end{tabular}\n\\end{center}\n\\end{document}"""
+# print(solution_indeces)
 amuse_doc = ""
 for i in range(6):
     amuse_doc += amuse_solutions[i] + "\n"
@@ -236,20 +335,47 @@ for i in range(6):
             clue_fixed = clue_fixed.replace(word, initial)
         amuse_doc  += str(num) + ". " + clue_fixed  + "\n"
     amuse_doc += "\n---\n\n"
+    # amuse_doc += solution_indeces
+for sol_idx in solution_indeces:
+    amuse_doc += sol_idx + ","
+amuse_doc = amuse_doc[:-1] + "\n"
+for sat_sol_idx in saturday_solution_indeces:
+    amuse_doc += str(sat_sol_idx)
 
 try:  
     os.mkdir("output")  
 except OSError as error:  
     print(error)
 
+try:  
+    os.mkdir(os.path.dirname("output/amuse"))
+except OSError as error:  
+    print(error)
+try:  
+    os.mkdir("output/pdf")  
+except OSError as error:  
+    print(error)
+
+try:  
+    os.mkdir("output/tex")  
+except OSError as error:  
+    print(error)
 fileName = "MiniMeta" +  mini_number
-f = open("output/" + fileName + ".txt", "w")
+f = open("output/amuse/" + fileName + ".txt", "w")
 f.write(amuse_doc)
 f.close()
 
-f = open("output/" + fileName + "(solved)" + ".tex", "w")
+
+f = open("output/tex/" + fileName + ".tex", "w")
 f.write(document)
 f.close()
 
-subprocess.check_call(['pdflatex', "output/" + fileName + "(solved)" + ".tex"])
-os.rename(fileName + "(solved)" + ".pdf", "output/" + fileName + "(solved)" + ".pdf")
+subprocess.check_call(['pdflatex', "output/tex/" + fileName + ".tex"])
+os.rename(fileName + ".pdf", "output/pdf/" + fileName + ".pdf")
+
+f = open("output/tex/" + fileName + "(solved)" + ".tex", "w")
+f.write(document_solved)
+f.close()
+
+subprocess.check_call(['pdflatex', "output/tex/" + fileName + "(solved)" + ".tex"])
+os.rename(fileName + "(solved)" + ".pdf", "output/pdf/" + fileName + "(solved)" + ".pdf")
