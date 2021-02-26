@@ -1,0 +1,136 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[table]{xcolor}% http://ctan.org/pkg/xcolor
+\usepackage{cwpuzzle}
+\usepackage[letterpaper]{geometry}
+\usepackage{enumitem}
+\usepackage{makecell}
+\usepackage{textcomp}
+\usepackage{multirow}
+\usepackage{color}
+\usepackage{multicol}
+\usepackage{array}
+\usepackage{courier}
+\usepackage{anyfontsize}
+\usepackage{tcolorbox}
+
+%paperwidth=17in, paperheight=22in, 
+\geometry{landscape, top=4mm, bottom=0in, left=0in, right=0in}
+
+
+\title{MetaMini Tabular}
+\author{kyle.rosenbluth }
+\date{November 2020}
+\newcommand{\colwidth}{24em}
+\newcommand*{\myfont}{\fontfamily{ptm}\selectfont}
+
+\begin{document}
+\definecolor{myred}{rgb}{0.97, 0.82, 0.82}
+\PuzzleDefineColorCell{r}{myred}
+
+\newcommand\lw{.6mm}
+
+\PuzzleDefineCell{h}{{
+\put(#1,#2){\framebox(1,1){}}
+\color{mydarksol}
+\linethickness{\lw}
+\put(#1,\the#2.5){{\line(1,0){0.5}}}
+}}
+
+\PuzzleDefineCell{H}{{
+\put(#1,#2){\framebox(1,1){}}
+\color{mydarksol}
+\linethickness{\lw}
+\put(\the#1.5,\the#2.5){{\line(1,0){0.5}}}
+}}
+
+\PuzzleDefineCell{v}{{
+\put(#1,#2){\framebox(1,1){}}
+\color{mydarksol}
+\linethickness{\lw}
+\put(\the#1.5,#2){{\line(0,1){0.5}}}
+}}
+
+\PuzzleDefineCell{V}{{
+\put(#1,#2){\framebox(1,1){}}
+\color{mydarksol}
+\linethickness{\lw}
+\put(\the#1.5,\the#2.5){{\line(0,1){0.5}}}
+}}
+
+\PuzzleDefineCell{p}{{
+\put(#1,#2){\framebox(1,1){}}
+\color{mydarksol}
+\linethickness{\lw}
+\put(\the#1.5,#2){{\line(0,1){1}}}
+}}
+
+\PuzzleDefineCell{e}{{
+\put(#1,#2){\framebox(1,1){}}
+\color{mydarksol}
+\linethickness{\lw}
+\put(#1,\the#2.5){{\line(1,0){1}}}
+}}
+
+\PuzzleDefineCell{1}{{
+\put(#1,#2){\framebox(1,1){}}
+\color{mydarksol}
+\linethickness{\lw}
+\put(\the#1.5,\the#2.5){{\line(1,0){0.5}}}
+\put(\the#1.5,\the#2.5){{\line(0,1){0.5}}}
+}}
+
+\PuzzleDefineCell{2}{{
+\put(#1,#2){\framebox(1,1){}}
+\color{mydarksol}
+\linethickness{\lw}
+\put(#1,\the#2.5){{\line(1,0){0.5}}}
+\put(\the#1.5,\the#2.5){{\line(0,1){0.5}}}
+}}
+
+\PuzzleDefineCell{3}{{
+\put(#1,#2){\framebox(1,1){}}
+\color{mydarksol}
+\linethickness{\lw}
+\put(#1,\the#2.5){{\line(1,0){0.5}}}
+\put(\the#1.5,\the#2){{\line(0,1){0.5}}}
+}}
+
+\PuzzleDefineCell{4}{{
+\put(#1,#2){\framebox(1,1){}}
+\color{mydarksol}
+\linethickness{\lw}
+\put(\the#1.5,\the#2.5){{\line(1,0){0.5}}}
+\put(\the#1.5,\the#2){{\line(0,1){0.5}}}
+}}
+
+\thispagestyle{empty}
+\hspace{0.3em}
+\begin{minipage}{35em}
+\vspace{1em}
+\textsf{\textbf{\huge{Mini Meta Solution}}}
+% \\
+
+
+\textsf{\textbf{By Pete Muller \& Andrew White}}\\
+% \raggedright{\textsf{For each of the first five mini crosswords, one of the entries also serves as part of a five-word meta clue. The answer to the meta is a word (five letters or longer) hidden within the sixth mini crossword. The hidden meta answer starts in one of the squares and snakes through the grid vertically and horizontally from there (no diagonals!) without revisiting any squares.\\}}
+\end{minipage}
+
+
+
+
+% BOTTOM
+
+\definecolor{mysol}{rgb}{0.23, 0.72, 1}
+\definecolor{mydarksol}{rgb}{0, 0.5, 1}
+\definecolor{myg}{rgb}{0.57, 0.96, 0.27}
+\definecolor{myr}{rgb}{0.84, 0.29, 0.29}
+\PuzzleDefineColorCell{s}{mysol}
+\PuzzleDefineColorCell{d}{mydarksol}
+\PuzzleDefineColorCell{g}{myg}
+\PuzzleDefineColorCell{r}{myr}
+
+
+\begin{center}
+\begin{tabular}{ p{\colwidth} p{\colwidth} p{\colwidth} }
