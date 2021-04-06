@@ -1,0 +1,225 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[table]{xcolor}% http://ctan.org/pkg/xcolor
+\usepackage{cwpuzzle}
+\usepackage[letterpaper]{geometry}
+\usepackage{enumitem}
+\usepackage{makecell}
+\usepackage{textcomp}
+\usepackage{multirow}
+\usepackage{color}
+\usepackage{multicol}
+\usepackage{array}
+\usepackage{courier}
+\usepackage{anyfontsize}
+
+
+%paperwidth=17in, paperheight=22in, 
+\geometry{landscape, top=4mm, bottom=0in, left=0in, right=0in}
+
+
+\title{MetaMini Tabular}
+\author{kyle.rosenbluth }
+\date{November 2020}
+\newcommand{\colwidth}{24em}
+\newcommand*{\myfont}{\fontfamily{ptm}\selectfont}
+
+\begin{document}
+
+\thispagestyle{empty}
+\hspace{0.3em}
+\begin{minipage}{35em}
+\vspace{1em}
+\textsf{\textbf{\huge{Mini Meta}}}
+% \\
+
+
+\textsf{\textbf{By Pete Muller \& Andrew White}}\\
+\raggedright{\textsf{For each of the first five mini crosswords, one of the entries also serves as part of a five-word meta clue. The answer to the meta is a word or phrase (five letters or longer) hidden within the sixth mini crossword. The hidden meta answer starts in one of the squares and snakes through the grid vertically and horizontally from there (no diagonals!) without revisiting any squares.\\}}
+\end{minipage}
+\hspace{.7em}
+% \hfill
+\begin{minipage}{41.3em}
+\vspace{0.5em}
+\PuzzleUnitlength=10pt
+\definecolor{myred}{rgb}{0.97, 0.82, 0.82}
+\PuzzleDefineColorCell{r}{myred}
+
+\newcommand\lw{.4mm}
+
+\PuzzleDefineCell{h}{{
+\put(#1,#2){\framebox(1,1){}}
+\color{mydarksol}
+\linethickness{\lw}
+\put(#1,\the#2.5){{\line(1,0){0.5}}}
+}}
+
+\PuzzleDefineCell{H}{{
+\put(#1,#2){\framebox(1,1){}}
+\color{mydarksol}
+\linethickness{\lw}
+\put(\the#1.5,\the#2.5){{\line(1,0){0.5}}}
+}}
+
+\PuzzleDefineCell{v}{{
+\put(#1,#2){\framebox(1,1){}}
+\color{mydarksol}
+\linethickness{\lw}
+\put(\the#1.5,#2){{\line(0,1){0.5}}}
+}}
+
+\PuzzleDefineCell{V}{{
+\put(#1,#2){\framebox(1,1){}}
+\color{mydarksol}
+\linethickness{\lw}
+\put(\the#1.5,\the#2.5){{\line(0,1){0.5}}}
+}}
+
+\PuzzleDefineCell{p}{{
+\put(#1,#2){\framebox(1,1){}}
+\color{mydarksol}
+\linethickness{\lw}
+\put(\the#1.5,#2){{\line(0,1){1}}}
+}}
+
+\PuzzleDefineCell{e}{{
+\put(#1,#2){\framebox(1,1){}}
+\color{mydarksol}
+\linethickness{\lw}
+\put(#1,\the#2.5){{\line(1,0){1}}}
+}}
+
+\PuzzleDefineCell{1}{{
+\put(#1,#2){\framebox(1,1){}}
+\color{mydarksol}
+\linethickness{\lw}
+\put(\the#1.5,\the#2.5){{\line(1,0){0.5}}}
+\put(\the#1.5,\the#2.5){{\line(0,1){0.5}}}
+}}
+
+\PuzzleDefineCell{2}{{
+\put(#1,#2){\framebox(1,1){}}
+\color{mydarksol}
+\linethickness{\lw}
+\put(#1,\the#2.5){{\line(1,0){0.5}}}
+\put(\the#1.5,\the#2.5){{\line(0,1){0.5}}}
+}}
+
+\PuzzleDefineCell{3}{{
+\put(#1,#2){\framebox(1,1){}}
+\color{mydarksol}
+\linethickness{\lw}
+\put(#1,\the#2.5){{\line(1,0){0.5}}}
+\put(\the#1.5,\the#2){{\line(0,1){0.5}}}
+}}
+
+\PuzzleDefineCell{4}{{
+\put(#1,#2){\framebox(1,1){}}
+\color{mydarksol}
+\linethickness{\lw}
+\put(\the#1.5,\the#2.5){{\line(1,0){0.5}}}
+\put(\the#1.5,\the#2){{\line(0,1){0.5}}}
+}}
+\definecolor{gray}{gray}{.9}
+\definecolor{mysol}{rgb}{0.23, 0.72, 1}
+\definecolor{mydarksol}{rgb}{0, 0.5, 1}
+\definecolor{myg}{rgb}{0.57, 0.96, 0.27}
+\definecolor{myr}{rgb}{0.84, 0.29, 0.29}
+\PuzzleDefineColorCell{s}{mysol}
+\PuzzleDefineColorCell{d}{mydarksol}
+\PuzzleDefineColorCell{g}{myg}
+\PuzzleDefineColorCell{r}{myr}
+\begin{tabular}{| c c c c c c |}
+\hline
+\multicolumn{6}{|c|}{\rule{0pt}{1.3em}\textsf{Last Week's Solution:}}\\ [0.5em]
+% \hline
+% \vspace{0.3em}
+\PuzzleSolution%[true]
+\footnotesize
+ \begin{Puzzle}{5}{5}%
+|I|M|B|A|D|.
+|N|O|L|I|E|.
+|[][rf]D|[][rf]R|[][rf]I|[][rf]N|[][rf]K|.
+|R|A|N|G|E|.
+|A|N|D|E|S|.
+\end{Puzzle}
+% \vspace{.3em}
+&
+\PuzzleSolution%[true]
+\footnotesize
+ \begin{Puzzle}{5}{5}%
+|I|A|M|S|* |.
+|P|L|A|T|[][rf]T|.
+|A|L|L|A|[][rf]H|.
+|D|I|T|K|[][rf]A |.
+|*|N|Y|E|[][rf]T |.
+\end{Puzzle}
+% \vspace{.3em}
+&
+\PuzzleSolution%[true]
+\footnotesize
+ \begin{Puzzle}{5}{5}%
+|*|A|[][rf]C|I|D|.
+|P|R|[][rf]U|N|E|.
+|L |O|[][rf]R |D |E |.
+|U |S|[][rf]E |U |P |.
+|M |E|[][rf]S |S |* |.
+\end{Puzzle}
+% \vspace{.3em}
+&
+\PuzzleSolution%[true]
+\footnotesize
+ \begin{Puzzle}{5}{5}%
+|*|Z|A|P|*|.
+|F|E|V|E|R|.
+|A|B|A|T|E|.
+|T|R|I|A|D|.
+|* |[][rf]A|[][rf]L|[][rf]L|*|.
+\end{Puzzle}
+% \vspace{.3em}
+&
+\PuzzleSolution%[true]
+\footnotesize
+ \begin{Puzzle}{5}{5}%
+|[][rf]I|P|A|D|*|.
+|[][rf]L|O|D|E|S|.
+|[][rf]L|E|O|N|A|.
+|[][rf]S|T|U|N|K|.
+|* |S|T|Y|E|.
+\end{Puzzle}
+% \vspace{.3em}
+&
+\PuzzleSolution[true]
+% \def\PuzzleFont{\rmfamily\tiny}
+\renewcommand{\PuzzleNumberFont}{\rmfamily\tiny}
+\footnotesize
+\begin{Puzzle}{5}{5}%
+|*|M|E|G|S|.
+|P|I|[\fontsize{3}{3}\selectfont $\rightarrow$][rf]X|[\fontsize{3}{3}\selectfont $\downarrow$][rf]I|E|.
+|F|[\fontsize{3}{3}\selectfont $\rightarrow$][rf]L|[\fontsize{3}{3}\selectfont $\uparrow$][rf]I|[][rf]R|T|.
+|F|[\fontsize{3}{3}\selectfont $\uparrow$][rf]E|L|L|S|.
+|T|R|E|Y|*|.
+\end{Puzzle}
+\\
+\textsf{DRINK} & \textsf{THAT} & \textsf{CURES} & \textsf{ALL} & \textsf{ILLS} & \hspace{1em}\textbf{\textsf{ELIXIR}}\\
+\hline
+\end{tabular}
+% }
+% \hline
+\end{minipage}
+% \end{tabular}
+% \end{minipage}
+% \hfill
+% \vspace{.2em}
+
+
+
+
+% BOTTOM
+
+
+
+\begin{center}
+\begin{tabular}{ p{\colwidth} p{\colwidth} p{\colwidth} }
+

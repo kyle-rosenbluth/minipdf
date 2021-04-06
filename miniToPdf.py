@@ -8,7 +8,9 @@ import os
 
 crossword_file = open(sys.argv[1]).read()
 mini_number = sys.argv[2]
+last_weeks_crossword_file = None if len(sys.argv) < 4 else open(sys.argv[3]).read()
 tex_header = open("tex_header.txt").read()
+tex_header_print = open("tex_header_print.txt").read()
 tex_header_solved = open("tex_header_solved.txt").read()
 tex_header = tex_header.replace("\\textsf{\\textbf{\\huge{Mini Meta}}}", "\\textsf{\\textbf{\\huge{Mini Meta " + mini_number + "}}}")
 tex_header_solved = tex_header_solved.replace("\\textsf{\\textbf{\\huge{Mini Meta Solution}}}", "\\textsf{\\textbf{\\huge{Mini Meta " + mini_number + " Solution}}}")
@@ -33,7 +35,15 @@ saturday_solution_indeces = None
 solution_indeces = []
 saturday_solution = ""
 solutions = ["", "", "", "", ""]
-def generatePuzzle(solved):
+
+
+def gen_print_header():
+    return tex_header_print
+    # new_header = tex_header
+    # new_header = new_header.replace("""\\textsf{Example:}""", """\\textsf{Last Week's Solution:}""", 1)
+    # return new_header
+
+def generatePuzzle(solved, montecitoJournal=False):
     global solution_indeces
     global saturday_solution_indeces
     global saturday_solution
@@ -46,13 +56,13 @@ def generatePuzzle(solved):
     if (solved):
         puzzle_start_post = """}}}\\vspace{0.55em}\\\\\n\\PuzzleSolution\n\\Large\n\\begin{Puzzle}{5}{5}\n"""
 
-
-    crosswords = [gray_cell + puzzle_start_pre_toprow + "MONDAY" + puzzle_start_post,
-                puzzle_start_pre_toprow + "TUESDAY" + puzzle_start_post,
-                gray_cell + puzzle_start_pre_toprow + "WEDNESDAY" + puzzle_start_post,
-                puzzle_start_pre_bottomrow + "THURSDAY" + puzzle_start_post,
-                gray_cell + puzzle_start_pre_bottomrow + "FRIDAY" + puzzle_start_post,
-                puzzle_start_pre_bottomrow + "SATURDAY" + puzzle_start_post]
+    mjText = """PUZZLE {\\fontfamily{ptm}\\selectfont \\#}"""
+    crosswords = [gray_cell + puzzle_start_pre_toprow + ("MONDAY" if not montecitoJournal else (mjText + "1")) + puzzle_start_post,
+                puzzle_start_pre_toprow + ("TUESDAY" if not montecitoJournal else (mjText + "2")) + puzzle_start_post,
+                gray_cell + puzzle_start_pre_toprow + ("WEDNESDAY" if not montecitoJournal else (mjText + "3")) + puzzle_start_post,
+                puzzle_start_pre_bottomrow + ("THURSDAY" if not montecitoJournal else (mjText + "4")) + puzzle_start_post,
+                gray_cell + puzzle_start_pre_bottomrow + ("FRIDAY" if not montecitoJournal else (mjText + "5")) + puzzle_start_post,
+                puzzle_start_pre_bottomrow + ("SATURDAY" if not montecitoJournal else ("META PUZZLE")) + puzzle_start_post]
     col_num = [[0 for j in range(5)] for i in range(6)]
     row_num = [[0 for j in range(5)] for i in range(6)]
 
@@ -288,30 +298,34 @@ def generatePuzzle(solved):
     #         crosswords[i] += """\\end{Puzzle}\\\\\n"""
     return (crosswords,  amuse_solutions)
 
+def resetGlobals():
+    global acrossIndeces, downIndeces, acrossClues, downClues, escapeChars, invertEscape, metaClueIndeces, metaSolutionIndeces, metaClues, metaSolution, saturday_solution_indeces, solution_indeces, saturday_solution, solutions
+    # Indeces variables indicate what #value to label the tiles. It does not offer any insight on to which tiles get the numbers, just what the tiles # values should be.
+    acrossIndeces = [[], [], [], [], [], []]
+    downIndeces = [[], [], [], [], [], []]
+
+    # acrossClueCount = [0] * 6
+    # downClueCount = [0] * 6
+
+    acrossClues = [[], [], [], [], [], []]
+    downClues = [[], [], [], [], [], []]
+    escapeChars = {"_": "\_", "&":"\&", "%": "\%", "$":"\$", "#":"\#", "{":"\{", "}":"\}", "~":"\\textasciitilde", "^":"\\textasciicircum", "\\":"\\textbackslash", """'""":"{\\myfont \\textquotesingle}"}
+    invertEscape  = {v: k for k, v in escapeChars.items()}
+    metaClueIndeces = None
+    metaSolutionIndeces = None
+    metaClues = []
+    metaSolution = []
+    saturday_solution_indeces = None
+    solution_indeces = []
+    saturday_solution = ""
+    solutions = ["", "", "", "", ""]
+
 solved = False
 crosswords_unsolved, amuse_solutions = generatePuzzle(solved)
 document = (tex_header_solved if solved else tex_header) + "\n" + ''.join(crosswords_unsolved)
 document += """\\\\\n\\end{tabular}\n\\end{center}\n\\end{document}"""
 
-# Indeces variables indicate what #value to label the tiles. It does not offer any insight on to which tiles get the numbers, just what the tiles # values should be.
-acrossIndeces = [[], [], [], [], [], []]
-downIndeces = [[], [], [], [], [], []]
-
-# acrossClueCount = [0] * 6
-# downClueCount = [0] * 6
-
-acrossClues = [[], [], [], [], [], []]
-downClues = [[], [], [], [], [], []]
-escapeChars = {"_": "\_", "&":"\&", "%": "\%", "$":"\$", "#":"\#", "{":"\{", "}":"\}", "~":"\\textasciitilde", "^":"\\textasciicircum", "\\":"\\textbackslash", """'""":"{\\myfont \\textquotesingle}"}
-invertEscape  = {v: k for k, v in escapeChars.items()}
-metaClueIndeces = None
-metaSolutionIndeces = None
-metaClues = []
-metaSolution = []
-saturday_solution_indeces = None
-solution_indeces = []
-saturday_solution = ""
-solutions = ["", "", "", "", ""]
+resetGlobals()
 
 solved = True
 crosswords_solved, amuse_solutions = generatePuzzle(solved)
@@ -342,6 +356,21 @@ amuse_doc = amuse_doc[:-1] + "\n"
 for sat_sol_idx in saturday_solution_indeces:
     amuse_doc += str(sat_sol_idx)
 
+resetGlobals()
+solved = False
+
+montecito_header = gen_print_header()
+crosswords_montecito, _ = generatePuzzle(solved, True)
+document_montecito = montecito_header + "\n" + ''.join(crosswords_montecito)
+document_montecito += """\\\\\n\\end{tabular}\n\\end{center}\n\\end{document}"""
+
+
+
+
+
+
+
+# Make directories
 try:  
     os.mkdir("output")  
 except OSError as error:  
@@ -352,14 +381,17 @@ try:
 except OSError as error:  
     print(error)
 try:  
-    os.mkdir("output/pdf")  
+    os.mkdir(os.path.dirname("output/pdf"))
 except OSError as error:  
     print(error)
 
 try:  
-    os.mkdir("output/tex")  
+    os.mkdir(os.path.dirname("output/tex"))
 except OSError as error:  
     print(error)
+    
+
+# Wite files
 fileName = "MiniMeta" +  mini_number
 f = open("output/amuse/" + fileName + ".txt", "w")
 f.write(amuse_doc)
@@ -379,3 +411,33 @@ f.close()
 
 subprocess.check_call(['pdflatex', "output/tex/" + fileName + "(solved)" + ".tex"])
 os.rename(fileName + "(solved)" + ".pdf", "output/pdf/" + fileName + "(solved)" + ".pdf")
+
+
+f = open("output/tex/" + fileName + "(montecito)" + ".tex", "w")
+f.write(document_montecito)
+f.close()
+
+subprocess.check_call(['pdflatex', "output/tex/" + fileName + "(montecito)" + ".tex"])
+os.rename(fileName + "(montecito)" + ".pdf", "output/pdf/" + fileName + "(montecito)" + ".pdf")
+
+
+# Clean up, remove aux and log files.
+if os.path.exists(fileName + ".aux"):
+  os.remove(fileName + ".aux")
+else:
+  print("The file does not exist")
+
+if os.path.exists(fileName + "(solved).aux"):
+  os.remove(fileName + "(solved).aux")
+else:
+  print("The file does not exist")
+
+if os.path.exists(fileName + ".log"):
+  os.remove(fileName + ".log")
+else:
+  print("The file does not exist")
+
+if os.path.exists(fileName + "(solved).log"):
+  os.remove(fileName + "(solved).log")
+else:
+  print("The file does not exist")
